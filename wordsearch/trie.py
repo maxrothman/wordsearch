@@ -6,6 +6,7 @@ class TrieNode:
   children to a node, use "add_children()".
 
   Usage examples:
+    >>> # Create a trie with words
     >>> root = TrieNode(words=['foo', 'bar', 'baz'])
     >>> 'bing' in root
     False
@@ -14,6 +15,13 @@ class TrieNode:
     True
     >>> root.children
     {'b': TrieNode(letter=b, children={a, i}), 'f': TrieNode(letter=f, children={o})}
+    >>>
+    >>> # Create a trie and add words later
+    >>> root = TrieNode()
+    >>> root.index('foo')
+    >>> 'foo' in root
+    True
+
   """
   def __init__(self, letter=None, words=None, children=None, word_end=False):
     """

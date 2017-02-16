@@ -15,13 +15,16 @@ class Board:
     board[y][x] == Board(board)[x,y] (assuming board is indexable)
 
     All of the nested iterables must be of the same length, or else a ValueError will
-    be raised.
+    be raised. Neither dimension of the board can be 0, so passing board = [[]] or []
+    will raise a ValueError.
 
     Args:
       board: an iterable of iterables
     """
     _board = [[r for r in row] for row in board]
 
+    if not (len(_board) > 0 and len(_board[0]) > 0):
+      raise ValueError("Both dimensions of the board must be greater than 0, got {}".format(_board))
     if not all(len(_board[0]) == len(l) for l in _board[1:]):
       raise ValueError("Every nested iterable must be the same length")
 
@@ -67,4 +70,38 @@ class Board:
     """
     self._validate_key(key)
     self._board[key[1]][key[0]] = value
+
+
+  @property
+  def width(self):
+    """Returns the width of the board (int)"""
+    return len(self._board[0])
+
+
+  @property
+  def height(self):
+    """Returns the height of the board (int)"""
+    return len(self._board)
+
+
+  def _iterate_letters(self):
+    """
+    Generator that yields x, y, letter for each letter in the board.
+    Iterates left to right, top to bottom.
+
+    Yields:
+      x: x-coordinate of yielded letter
+      y: y-coordinate of yielded letter
+      letter: current letter in the board
+    """
+    for y, row in enumerate(self._board):
+      for x, letter in enumerate(row):
+        yield x, y, letter
+
+
+  def __iter__(self):
+    """
+    Allows for iterating over the letters and their locations in the board
+    """
+    return self._iterate_letters()
     
