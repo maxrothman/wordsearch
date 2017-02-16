@@ -1,5 +1,5 @@
-import unittest
 from wordsearch.trie import TrieNode
+import unittest
 
 def recursive_equal(first, second):
   """
@@ -39,7 +39,7 @@ class TestRecursiveEqual(unittest.TestCase):
 
 class TestTrie(unittest.TestCase):
   def setUp(self):
-    self.root_node = TrieNode(children=[
+    self.reference_root = TrieNode(children=[
       TrieNode('a', children=[
         TrieNode('m', children=[
           TrieNode('p', word_end=True)
@@ -113,46 +113,46 @@ class TestTrie(unittest.TestCase):
     root = TrieNode()
     root.index('amp', 'ack', 'bus')
     
-    self.assertTrue(recursive_equal(root, self.root_node))
+    self.assertTrue(recursive_equal(root, self.reference_root))
 
   def test_construct_with_words(self):
     root = TrieNode(words=['amp', 'ack', 'bus'])
-    self.assertEqual(root, self.root_node)
+    self.assertEqual(root, self.reference_root)
 
   def test_construct_with_words_other_iterator(self):
     root = TrieNode(words={'amp', 'ack', 'bus'})
-    self.assertEqual(root, self.root_node)
+    self.assertEqual(root, self.reference_root)
 
   def test_construct_empty_wordlist(self):
     self.assertEqual(TrieNode(words=[]), TrieNode())
 
   def test_full_does_contain(self):
-    self.assertTrue(self.root_node.contains('amp'))
-    self.assertTrue(self.root_node.contains('ack'))
-    self.assertTrue(self.root_node.contains('bus'))
+    self.assertTrue(self.reference_root.contains('amp'))
+    self.assertTrue(self.reference_root.contains('ack'))
+    self.assertTrue(self.reference_root.contains('bus'))
 
   def test_partial_does_contain(self):
-    self.assertFalse(self.root_node.contains('a'))
-    self.assertFalse(self.root_node.contains('ac'))
-    self.assertFalse(self.root_node.contains('bu'))
+    self.assertFalse(self.reference_root.contains('a'))
+    self.assertFalse(self.reference_root.contains('ac'))
+    self.assertFalse(self.reference_root.contains('bu'))
 
   def test_partial_does_contain_prefix(self):
-    self.assertTrue(self.root_node.contains('a', prefix=True))
-    self.assertTrue(self.root_node.contains('ac', prefix=True))
-    self.assertTrue(self.root_node.contains('bu', prefix=True))
+    self.assertTrue(self.reference_root.contains('a', prefix=True))
+    self.assertTrue(self.reference_root.contains('ac', prefix=True))
+    self.assertTrue(self.reference_root.contains('bu', prefix=True))
 
   def test_does_not_contain(self):
-    self.assertFalse(self.root_node.contains('car'))
-    self.assertFalse(self.root_node.contains('candy'))
-    self.assertFalse(self.root_node.contains('amd'))
-    self.assertFalse(self.root_node.contains('adc'))
-    self.assertFalse(self.root_node.contains('bur'))
-    self.assertFalse(self.root_node.contains('apple'))
+    self.assertFalse(self.reference_root.contains('car'))
+    self.assertFalse(self.reference_root.contains('candy'))
+    self.assertFalse(self.reference_root.contains('amd'))
+    self.assertFalse(self.reference_root.contains('adc'))
+    self.assertFalse(self.reference_root.contains('bur'))
+    self.assertFalse(self.reference_root.contains('apple'))
 
   def test_dunder_contains(self):
-    self.assertTrue('amp' in self.root_node)
-    self.assertFalse('a' in self.root_node)
-    self.assertFalse('car' in self.root_node)
+    self.assertTrue('amp' in self.reference_root)
+    self.assertFalse('a' in self.reference_root)
+    self.assertFalse('car' in self.reference_root)
 
   def test_repr(self):
     self.assertEqual(

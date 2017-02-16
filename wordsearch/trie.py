@@ -31,7 +31,7 @@ class TrieNode:
     if letter is None:
       pass
     elif len(letter) != 1:
-      raise ValueError('"letter" should have a length of 1')
+      raise ValueError('"letter" should have a length of 1, got '.format(letter))
     else:
       letter = letter.lower()
     self.letter = letter
