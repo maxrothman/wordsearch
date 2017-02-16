@@ -4,6 +4,7 @@ from wordsearch.main import random_board, search_board
 from wordsearch.trie import TrieNode
 from wordsearch.board import Board
 from argparse import ArgumentParser, FileType, ArgumentDefaultsHelpFormatter
+import os.path, pickle
 
 description = """
 Wordsearches are tedious, so it's more fun to make computers do them. This tool
@@ -37,9 +38,22 @@ def main():
   else:
     board = random_board(args.width, args.height)
 
-  rootnode = TrieNode()
-  for word in args.dictionary:
-    rootnode.index(word.strip())
+  # Pickle trie for performance
+  # If there exists a pickle cache for the file's name and the file has not been
+  # changed since the last cache was made, load from the pickle cache instead.
+  cache_name = args.dictionary.name + '.pickle'
+  cache_valid = False
+  if os.path.exists(cache_name):
+    lastmtime, rootnode = pickle.load(open(cache_name, 'rb'))
+    if lastmtime <= os.path.getmtime(args.dictionary.name):
+      cache_valid = True
+
+  if not cache_valid:
+    rootnode = TrieNode()
+    for word in args.dictionary:
+      rootnode.index(word.strip())
+
+    pickle.dump([os.path.getmtime(args.dictionary.name), rootnode], open(cache_name, 'wb+'))
 
   for word in search_board(board, rootnode):
     if len(word) >= args.min_word_length:
