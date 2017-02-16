@@ -23,12 +23,13 @@ def parse_args():
     help=("Search for words in a file rather than a random board."
           "The file should be a grid of lowerclase letters with no spaces or commas.")
   )
+  parser.add_argument('-m' '--min-length', dest='min_word_length', type=int, default=0,
+    help="Skip printing words shorter than MIN_WORD_LENGTH")
 
   return parser.parse_args()
 
 
 def main():
-  # BROKEN: finds no words in test_wordsearch.txt
   args = parse_args()
 
   if args.wordsearch:
@@ -38,10 +39,11 @@ def main():
 
   rootnode = TrieNode()
   for word in args.dictionary:
-    rootnode.index(word)
+    rootnode.index(word.strip())
 
   for word in search_board(board, rootnode):
-    print(word)
+    if len(word) >= args.min_word_length:
+      print(word)
 
 
 if __name__ == '__main__':
