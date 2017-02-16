@@ -31,3 +31,28 @@ def board_run(start, direction, board):
       cur_pt = (cur_pt[0] + direction[0], cur_pt[1] + direction[1])
   except IndexError:
     return
+
+
+def trie_search(root):
+  """
+  A generator that progressively searches down a trie. When given a letter with
+  "trie_search.send(letter)", it does the following:
+  - If the letter is not a child of the current node, raises a StopIteration
+  - If the letter is a child of the current node, select it, and yield whether it
+    ends a word as a boolean
+
+  Note that you must "prime" the generator by calling next() or .send(None) on it
+  once before .send()-ing the first letter.
+
+  Args:
+    root: root TrieNode to begin the search with
+  """
+  cur_node = root
+  letter = None
+  
+  while True:
+    letter = yield cur_node.word_end
+    if letter in cur_node.children:
+      cur_node = cur_node.children[letter]
+    else:
+      return
