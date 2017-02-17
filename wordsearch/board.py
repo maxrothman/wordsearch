@@ -84,24 +84,17 @@ class Board:
     return len(self._board)
 
 
-  def _iterate_letters(self):
+  def __iter__(self):
     """
-    Generator that yields x, y, letter for each letter in the board.
-    Iterates left to right, top to bottom.
+    Yields a tuple of x, y, letter for each letter in the board.
 
     Yields:
       x: x-coordinate of yielded letter
       y: y-coordinate of yielded letter
       letter: current letter in the board
     """
+    # return self._iterate_letters()
     for y, row in enumerate(self._board):
       for x, letter in enumerate(row):
         yield x, y, letter
-
-
-  def __iter__(self):
-    """
-    Allows for iterating over the letters and their locations in the board
-    """
-    return self._iterate_letters()
     
