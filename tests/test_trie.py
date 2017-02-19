@@ -1,5 +1,5 @@
 from wordsearch.trie import TrieNode
-import unittest
+import unittest, re
 
 def recursive_equal(first, second):
   """
@@ -34,6 +34,9 @@ class TestRecursiveEqual(unittest.TestCase):
     ))
     self.assertFalse(recursive_equal(
       TrieNode(words=['am', 'ac', 'bus']), TrieNode(words=['amm', 'ack', 'bus'])
+    ))
+    self.assertFalse(recursive_equal(
+      TrieNode(words=['am', 'ac', 'bus']), TrieNode(words=['am', 'ack', 'bus', 'bar'])
     ))
 
 
@@ -76,8 +79,14 @@ class TestTrie(unittest.TestCase):
     self.assertNotEqual(TrieNode('c', children=[TrieNode('a')]), TrieNode('c', children=[TrieNode('b')]))
     self.assertNotEqual(TrieNode('a'), TrieNode('a', word_end=True))
 
-  def test_child(self):
-    root = TrieNode(children=[TrieNode('a')])
+  def test_construct_with_children(self):
+    root = TrieNode(children=[TrieNode('a'), TrieNode('b')])
+    self.assertEqual(root.letter, None)
+    self.assertTrue('a' in root.children)
+    self.assertEqual(root.children['a'], TrieNode('a'))
+
+  def test_construct_with_children_other_iterator(self):
+    root = TrieNode(children=(TrieNode('a'), TrieNode('b')))
     self.assertEqual(root.letter, None)
     self.assertTrue('a' in root.children)
     self.assertEqual(root.children['a'], TrieNode('a'))
@@ -112,8 +121,10 @@ class TestTrie(unittest.TestCase):
   def test_index(self):
     root = TrieNode()
     root.index('amp', 'ack', 'bus')
-    
     self.assertTrue(recursive_equal(root, self.reference_root))
+
+  def test_index_on_child(self):
+    self.assertRaises(ValueError, lambda: self.reference_root.children['a'].index('foo'))
 
   def test_construct_with_words(self):
     root = TrieNode(words=['amp', 'ack', 'bus'])
@@ -155,12 +166,18 @@ class TestTrie(unittest.TestCase):
     self.assertFalse('car' in self.reference_root)
 
   def test_repr(self):
-    self.assertEqual(
-      repr(TrieNode('a', children=[TrieNode('b'), TrieNode('c')])),
-      "TrieNode(letter=a, children={b, c}, word_end=False)"
+    node = TrieNode('a', children=[TrieNode('b'), TrieNode('c')])
+    regex = re.match(
+      r"^TrieNode\(letter=a, children=\{([bc], [bc])\}, word_end=False\)$",
+      repr(node)
     )
+    self.assertFalse(regex == None)
+
+    # Compare a set of the children so order doesn't matter
+    self.assertEqual({w.strip() for w in regex.group(1).split(',')}, set(node.children))
 
   def test_add_chilren(self):
     root = TrieNode()
     root._add_children(TrieNode('a'))
     self.assertTrue('a' in root.children)
+    self.assertEqual(root.children['a'], TrieNode('a'))

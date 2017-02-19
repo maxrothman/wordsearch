@@ -2,12 +2,14 @@ class TrieNode:
   """
   A node in a trie.
 
-  Note that "children" is not intended for modification. If you want to directly add
-  children to a node, use "add_children()".
+  Note that "TrieNode.children" is not intended for modification. If you want to directly add
+  children to a node, use "_add_children()".
 
   Usage examples:
     >>> # Create a trie with words
     >>> root = TrieNode(words=['foo', 'bar', 'baz'])
+    >>> 'foo' in root
+    True
     >>> 'bing' in root
     False
     >>> root.index('bing')
@@ -39,7 +41,7 @@ class TrieNode:
     if letter is None:
       pass
     elif len(letter) != 1:
-      raise ValueError('"letter" should have a length of 1, got '.format(letter))
+      raise ValueError('"letter" should have a length of 1, got "{}"'.format(letter))
     else:
       letter = letter.lower()
     self.letter = letter
@@ -57,27 +59,28 @@ class TrieNode:
 
   def index(self, *words):
     """
-    Add all the "words" args to the trie
+    Add words to the trie
 
     Args:
       words: strings of words to add to the trie under this node.
     """
     if self.letter is not None:
-      raise ValueError('{}.index() should only be called on the root node'.format(
-        type(self).__name__
-      ))
+      raise ValueError('index() should only be called on the root node')
 
     for word in words:
       cur_node = self
       for letter in word:
+        # If the node already exists, use it
         if letter in cur_node.children:
           new_node = cur_node.children[letter]
+        # Otherwise, make one
         else:
           new_node = type(self)(letter)
           cur_node._add_children(new_node)
       
         cur_node = new_node
       
+      # Once we reach the end of the word, flag whichever node ends it
       cur_node.word_end = True
 
 

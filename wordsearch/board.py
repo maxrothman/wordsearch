@@ -24,7 +24,7 @@ class Board:
     _board = [[r for r in row] for row in board]
 
     if not (len(_board) > 0 and len(_board[0]) > 0):
-      raise ValueError("Both dimensions of the board must be greater than 0, got {}".format(_board))
+      raise ValueError("Both dimensions of the board must be greater than 0")
     if not all(len(_board[0]) == len(l) for l in _board[1:]):
       raise ValueError("Every nested iterable must be the same length")
 
@@ -47,10 +47,11 @@ class Board:
     Args:
       key: key to test for validity
     """
-    if not isinstance(key, collections.Sequence):
-      raise TypeError("Expected collection of length 2, got {}".format(key))
-    if len(key) != 2:
-      raise ValueError("Board must be indexed with a pair of x, y coordinates, got {}".format(key))
+    if not isinstance(key, collections.Sequence) or len(key) != 2:
+      raise ValueError('Board must be indexed with a pair of x, y coordinates, got "{}"'.format(key))
+    
+    # Don't need to check if k > len(board) because the list will raise an IndexError for us.
+    # This just prevents board[-1,-1] from returning a value.
     if any(k < 0 for k in key):
       raise IndexError("Board index out of range")
 
@@ -86,14 +87,13 @@ class Board:
 
   def __iter__(self):
     """
-    Yields a tuple of x, y, letter for each letter in the board.
+    Yields a tuple of (x, y, letter) for each letter in the board.
 
     Yields:
       x: x-coordinate of yielded letter
       y: y-coordinate of yielded letter
       letter: current letter in the board
     """
-    # return self._iterate_letters()
     for y, row in enumerate(self._board):
       for x, letter in enumerate(row):
         yield x, y, letter

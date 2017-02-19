@@ -2,7 +2,6 @@ import wordsearch.main as main
 from wordsearch.board import Board
 from wordsearch.trie import TrieNode
 import string
-from collections import Counter
 import unittest
 
 class TestBoardRun(unittest.TestCase):
@@ -23,6 +22,9 @@ class TestBoardRun(unittest.TestCase):
     yields = list(main.start_board_run((0,0), ( 0, 1), self.board))
     self.assertEqual(yields, [1, 4, 7])
 
+    yields = list(main.start_board_run((0,0), (-1, 1), self.board))
+    self.assertEqual(yields, [1])
+
     yields = list(main.start_board_run((0,0), (-1, 0), self.board))
     self.assertEqual(yields, [1])
 
@@ -32,6 +34,9 @@ class TestBoardRun(unittest.TestCase):
     yields = list(main.start_board_run((0,0), ( 0,-1), self.board))
     self.assertEqual(yields, [1])
 
+    yields = list(main.start_board_run((0,0), ( 1,-1), self.board))
+    self.assertEqual(yields, [1])
+
   def test_bad_direction(self):
     self.assertRaises(ValueError, lambda: next(main.start_board_run((0,0), (2,2), self.board)))
     self.assertRaises(ValueError, lambda: next(main.start_board_run((0,0), (0,0), self.board)))
@@ -39,17 +44,19 @@ class TestBoardRun(unittest.TestCase):
 
 class TestTrieSearch(unittest.TestCase):
   def setUp(self):
-    self.reference_trie = TrieNode(words=['amp', 'ack', 'bus'])
+    self.reference_trie = TrieNode(words=['amp', 'amps', 'ack', 'bus'])
     self.search = main.start_trie_search(self.reference_trie)
     next(self.search)
 
   def test_not_wordend(self):
     self.assertFalse(self.search.send('a'))
+    self.assertFalse(self.search.send('m'))
 
   def test_is_wordend(self):
     self.search.send('a')
     self.search.send('m')
     self.assertTrue(self.search.send('p'))
+    self.assertTrue(self.search.send('s'))
 
   def test_end_search(self):
     self.assertRaises(StopIteration, lambda: self.search.send('z'))
@@ -62,6 +69,7 @@ class TestTrieSearch(unittest.TestCase):
     self.assertFalse(self.search.send('a'))
     self.assertFalse(self.search.send('m'))
     self.assertTrue(self.search.send('p'))
+    self.assertTrue(self.search.send('s'))
 
 
 class TestDirections(unittest.TestCase):
@@ -77,7 +85,8 @@ class TestDirections(unittest.TestCase):
     self.assertEqual(matrix[start[1]][start[0]], 5,
       "The test itself is broken, matrix has unexpected value in starting position")
 
-    results = {matrix[start[1] + direc[0]][start[0] + direc[1]] for direc in main.directions()}
+    results = {matrix[start[1] + direc[0]][start[0] + direc[1]] for direc in main._directions}
+    
     # Should skip 5
     self.assertEqual(results, {1, 2, 3, 4, 6, 7, 8, 9})
 
